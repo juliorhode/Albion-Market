@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Document</title>
+    <script src="js/jquery-3.5.1.js"></script>
+    <script type="application/json" src="items/items.json"></script>
+  </head>
+  <body>
+    <select name="" id="nombreItems"></select>
+    
+    <br />
+    <br />
+    <br />
+    <br />
+
+    <table border="1">
+      <thead>
+        <th>elemento</th>
+        <th>descripcion</th>
+        <th>imagen</th>
+      </thead>
+      <tbody id="bodyTable"></tbody>
+    </table>
+
+    <table border="1">
+        <thead>
+          <th>ciudad</th>
+          <th>compra min</th>
+          <th>compra max</th>
+          <th>venta min</th>
+          <th>venta max</th>
+        </thead>
+        <tbody ></tbody>
+      </table>
+
+    <script>
+      var item;
+      $(document).ready(function () {
+        cargaDatos();
+        $("#nombreItems").change(function () {
+           item = $("#nombreItems").select().val();
+           descripcion();
+        });
+
+
+        function cargaDatos() {
+          var select = document.getElementById("nombreItems");
+          let requestURL =
+            "https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json";
+          let request = new XMLHttpRequest();
+          request.open("GET", requestURL);
+          request.responseType = "json";
+          request.send();
+          request.onload = function () {
+          const listado = request.response;
+            for (var iterator of listado) {
+                if (
+                iterator.LocalizedNames !== null &&
+                iterator.LocalizedDescriptions !== null
+                ) {
+
+                var option = document.createElement("option");
+                option.text = iterator.LocalizedNames["ES-ES"];
+                option.value = iterator.UniqueName;
+                select.add(option);
+                }
+            }
+          };
+        }
+
+        function descripcion() {
+          var select = document.getElementById("nombreItems");
+          let requestURL =
+            "https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json";
+          let request = new XMLHttpRequest();
+          request.open("GET", requestURL);
+          request.responseType = "json";
+          request.send();
+          request.onload = function () {
+            const listado = request.response;
+            for (var iterator of listado) {
+              if (
+                iterator.LocalizedNames !== null &&
+                iterator.LocalizedDescriptions !== null
+              ) {
+                  if (iterator.UniqueName == item) {
+                      
+                      var fila = `
+                    <tr>
+                        <td>
+                            ${iterator.LocalizedNames["ES-ES"]}
+                        </td>
+                        <td>
+                            ${iterator.LocalizedDescriptions["ES-ES"]}
+                        </td>
+                        <td>
+                            <img src="https://albiononline2d.ams3.cdn.digitaloceanspaces.com/thumbnails/orig/${item}" alt="" style="width:100px">
+                        </td>
+                        
+
+                    </tr> `;
+                      var registro = document.createElement("tr");
+                      registro.innerHTML = fila;
+                      document.getElementById("bodyTable").appendChild(registro);
+                  }
+              }
+            }
+          };
+        }
+
+        function mercado(){
+
+        }
+
+        // hay que probarlo 
+        function conexion(){
+          let requestURL = "https://www.albion-online-data.com/api/v2/stats/prices/";
+          let request = new XMLHttpRequest();
+          request.open("GET", requestURL);
+          request.responseType = "json";
+          request.send();
+          request.onload = function(){
+              return request.response;
+          }
+        }
+
+
+
+
+
+      });
+    </script>
+    
+  </body>
+</html>

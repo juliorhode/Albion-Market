@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+  <title>Albion</title>
+</head>
+
+<body>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-sm-2">
+        <label for="calidadItem">Ciudad</label>
+        <select class="form-control" name="" id="nombreCiudad">
+          <option value="">Todos</option>
+          <option value="Fort Sterling">Fort Sterling</option>
+          <option value="Caerleon">Caerleon</option>
+          <option value="Lymhurst">Lymhurst</option>
+          <option value="Thetford">Thetford</option>
+          <option value="Bridgewatch">Bridgewatch</option>
+          <option value="Martlock">Martlock</option>
+        </select>
+      </div>
+      <div class="col-sm-2">
+        <label for="calidadItem">Calidad</label>
+        <select class="form-control" name="" id="calidadItem">
+          <option value="">Todos</option>
+          <option value="1">Normal </option>
+          <option value="2">Bien </option>
+          <option value="3">Excepcional </option>
+          <option value="4">Excelente </option>
+          <option value="5">Obra maestra</option>
+        </select>
+      </div>
+    </div>
+    <div class="col-sm-12">
+      <table class="table table-hover table-dark">
+        <thead>
+          <tr>
+            <th scope="col">Imagen</th>
+            <th scope="col">Item</th>
+            <th scope="col">Descripción</th>
+          </tr>
+        </thead>
+
+        <tbody id="bodyTable"></tbody>
+      </table>
+    </div>
+
+    <div class="col-sm-12">
+      <table class="table table-hover table-dark">
+        <thead>
+          <tr>
+            <th scope="col">Ciudad</th>
+            <th scope="col">Calidad</th>
+            <th scope="col">Precio Min. Venta</th>
+            <th scope="col">Precio Max. Venta</th>
+            <th scope="col">Precio Min. Compra</th>
+            <th scope="col">Precio Max. Compra</th>
+          </tr>
+        </thead>
+
+        <tbody id="bodyTableMarket"></tbody>
+      </table>
+    </div>
+  </div>
+
+
+
+  <script type="text/javascript">
+    /**************************/
+    /*        Variables       */
+    /**************************/
+    /*********************************************************************************************/
+    var request = new XMLHttpRequest();
+    var parametros = new URLSearchParams(location.search);
+    // Id del item
+    const id = parametros.get("id");
+    // Nombre del item
+    const item = parametros.get("item");
+    // Descripcion del item
+    const descripcion = parametros.get("descripcion");
+
+    var itemCiudad = "Caerleon,Lymhurst,Thetford,Bridgewatch,Martlock,Fort Sterling";
+    var itemCalidad = "";
+
+    var urlImagen = "https://albiononline2d.ams3.cdn.digitaloceanspaces.com/thumbnails/orig/";
+    var cargaError = `
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                <strong>Revisar fuente de datos</strong> 
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+    `;
+    var fila = `
+              <tr>
+                  <td>
+                    <img src="${urlImagen + id}" alt="No Contiene Imagen">
+                  </td>
+                  <td>
+                    ${item}
+                  </td>
+                  <td>
+                    ${descripcion}
+                  </td>
+              </tr> 
+    `;
+
+    /*********************************************************************************************/
+
+    // "https://www.albion-online-data.com/api/v2/stats/Prices/T4_CAPEITEM_UNDEAD@1?locations=Caerleon,Lymhurst,Thetford,Bridgewatch,Martlock,Fort Sterling&date=2020-07-13"
+    $(document).ready(function () {
+      $("#nombreCiudad").val("");
+      $("#nombreCiudad").change(function () {
+        itemCiudad = $("#nombreCiudad").select().val();
+        // Eliminar el nodo ya creado
+        let element = document.getElementById("bodyTableMarket");
+        while (element.firstChild) {
+          element.removeChild(element.firstChild);
+        }
+
+        if (itemCiudad == "") {
+          itemCiudad = "Caerleon,Lymhurst,Thetford,Bridgewatch,Martlock,Fort Sterling";
+        }
+        console.log(itemCiudad);
+        cargaDatos();
+      });
+      $("#calidadItem").val("");
+      $("#calidadItem").change(function () {
+        // Eliminar el nodo ya creado
+        let element = document.getElementById("bodyTableMarket");
+        while (element.firstChild) {
+          element.removeChild(element.firstChild);
+        }
+        itemCalidad = $("#calidadItem").select().val();
+        console.log(itemCalidad);
+        cargaDatos();
+      });
+    });
+
+    function creaElemento() {
+      console.log(id);
+      console.log(item);
+      console.log(descripcion);
+      let registro = document.createElement("tr");
+      registro.innerHTML = fila;
+      document.getElementById("bodyTable").appendChild(registro);
+
+      cargaDatos();
+    }
+
+
+    function cargaDatos() {
+      // Enlace para obtener los precios
+      var urlPrecio = `https://www.albion-online-data.com/api/v2/stats/Prices/${id}?locations=${itemCiudad}&qualities=${itemCalidad}`;
+      console.log(urlPrecio);
+
+      request.open("GET", urlPrecio, true);
+      request.onreadystatechange = function (aEvt) {
+        if (request.readyState == 4) {
+          if (request.status == 200) {
+            // Al tener los datos completos, se los paso a la funcion que los va a representar en una tabla
+            cargaElementos(request.response);
+          } else {
+            console.log("Error");
+
+
+            // var registro = document.createElement("div");
+            // registro.innerHTML = respesta;
+            // document.getElementById("status").appendChild(registro);
+          }
+        }
+      };
+      request.responseType = "json";
+      request.send();
+    }
+
+    // parametros.forEach((value, key) => {
+    //   // console.log(key,value);
+    //   console.log(value);
+    // });
+
+    function cargaElementos(resultado) {
+      
+      for (const iterator of resultado) {
+
+        let fila = `
+                    <tr>
+                        <td>
+                          ${iterator.city}
+                        </td>
+                        <td>
+                          ${iterator.quality}
+                        </td>
+                        <td>
+                          ${iterator.sell_price_min.toLocaleString('de-DE')}
+                        </td>
+                        <td>
+                          ${iterator.sell_price_max.toLocaleString('de-DE')}
+                        </td>
+                        <td>
+                            ${iterator.buy_price_min.toLocaleString('de-DE')}
+                        </td>
+                        <td>
+                            ${iterator.buy_price_max.toLocaleString('de-DE')}
+                        </td>
+                    </tr> `;
+        // ${iterator.LocalizedNames["ES-ES"]}
+        let registro = document.createElement("tr");
+        registro.innerHTML = fila;
+        document.getElementById("bodyTableMarket").appendChild(registro);
+        
+      }
+    }
+    creaElemento();
+  </script>
+  <style>
+    .table td {
+      vertical-align: middle;
+    }
+
+    .table img {
+      vertical-align: middle;
+      border-style: none;
+      width: 100px;
+    }
+
+    #consulta {
+      margin: 20% auto;
+    }
+
+    .row {
+      margin-left: 0;
+      margin-top: 2%;
+      text-align: center;
+    }
+
+    @media only screen and (max-width: 600px) {
+      #consulta {
+        margin: 2%;
+      }
+    }
+  </style>
+</body>
+
+</html>

@@ -1,0 +1,48 @@
+Documentacion
+https://www.albion-online-data.com/
+
+
+API REST
+---------
+https://www.albion-online-data.com/api/swagger/index.html
+
+Grafico
+--------
+https://www.albion-online-data.com/api/v2/stats/Charts/T4_BAG?locations=Bridgewatch&date=2020-07-07&time-scale=6
+
+Precio oro del dia
+-------------------
+https://www.albion-online-data.com/api/v2/stats/Gold?date=2020-07-07
+
+Precio mercado
+---------------
+https://www.albion-online-data.com/api/v2/stats/Prices/T3_MAIN_DAGGER
+
+https://www.albion-online-data.com/api/v2/stats/Prices/T3_MAIN_DAGGER?locations=Bridgewatch
+
+https://www.albion-online-data.com/api/v2/stats/Prices/T3_MAIN_DAGGER?locations=Bridgewatch&qualities=1
+
+Formato para ver listo en html
+-------------------------------
+https://www.albion-online-data.com/api/v2/stats/View/T3_MAIN_DAGGER
+https://www.albion-online-data.com/api/v2/stats/View/T3_MAIN_DAGGER?locations=Bridgewatch
+https://www.albion-online-data.com/api/v2/stats/View/T3_MAIN_DAGGER?locations=Bridgewatch&qualities=1
+
+Meta-Data
+----------
+https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json
+
+Imagen
+-------
+https://gameinfo.albiononline.com/api/gameinfo/items/T2_BAG
+
+<img src="https://gameinfo.albiononline.com/api/gameinfo/items/T2_BAG" alt="T2_BAG" style="width: 80px;">
+
+Descripcion
+------------
+https://gameinfo.albiononline.com/api/gameinfo/items/T3_MAIN_DAGGER/data/
+
+
+aun no se
+----------
+Item Categories: https://gameinfo.albiononline.com/api/gameinfo/items/_itemCategoryTree

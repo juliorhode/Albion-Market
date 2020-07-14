@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css"
+    integrity="sha384-9aIt2nRpC12Uk9gS9baDl411NQApFmC26EwAOH8WgZl5MYYxFfc+NcPb1dKGj7Sk" crossorigin="anonymous" />
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+    integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"
+    integrity="sha384-Q6E9RHvbIyZFJoft+2mJbHaEWldlvI9IOYy5n3zV9zzTtmI3UksdQRVvoxMfooAo"
+    crossorigin="anonymous"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"
+    integrity="sha384-OgVRvuATP1z7JjHLkuOU7Xw704+h835Lr+6QL9UvYjZE3Ipu6Tp75j7Bh/kR0JKI"
+    crossorigin="anonymous"></script>
+
+
+  <title>Albion</title>
+</head>
+
+<body>
+  <script>
+    $(document).ready(function () {
+      $("#busqueda").on("keyup", function () {
+        var value = $(this).val().toLowerCase();
+        $("#bodyTable tr").filter(function () {
+          $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+        });
+      });
+    });
+
+    // Conexion para la solicitud de los datos
+    function cargaDatos() {
+      var request = new XMLHttpRequest();
+      var requestURL =
+        "https://raw.githubusercontent.com/broderickhyman/ao-bin-dumps/master/formatted/items.json";
+      request.open("GET", requestURL, true);
+      request.onreadystatechange = function (aEvt) {
+        if (request.readyState == 4) {
+          if (request.status == 200) {
+            // Al tener los datos completos, se los paso a la funcion que los va a representar en una tabla
+            cargaElementos(request.response);
+          } else {
+            var respesta = `
+              <div
+                class="alert alert-danger alert-dismissible fade show"
+                role="alert"
+              >
+                <strong>Revisar fuente de datos</strong> 
+                <button
+                  type="button"
+                  class="close"
+                  data-dismiss="alert"
+                  aria-label="Close"
+                >
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>`;
+            var registro = document.createElement("div");
+            registro.innerHTML = respesta;
+            document.getElementById("status").appendChild(registro);
+          }
+        }
+      };
+      request.responseType = "json";
+      request.send();
+    }
+
+    function cargaElementos(resultado) {
+      for (const iterator of resultado) {
+        if (
+          iterator.LocalizedNames != null &&
+          iterator.LocalizedDescriptions !== null
+        ) {
+
+          var fila = `
+                    <tr>
+                        <td>
+                          <a href="detalles.html?id=${iterator.UniqueName}&item=${iterator.LocalizedNames["ES-ES"]}&descripcion=${iterator.LocalizedDescriptions["ES-ES"]}">${iterator.LocalizedNames["ES-ES"]}</a>
+                            
+                        </td>
+                        <td>
+                            ${iterator.LocalizedDescriptions["ES-ES"]}
+                        </td>
+                    </tr> `;
+          // ${iterator.LocalizedNames["ES-ES"]}
+          var registro = document.createElement("tr");
+          registro.innerHTML = fila;
+          document.getElementById("bodyTable").appendChild(registro);
+        }
+      }
+    }
+
+    cargaDatos();
+  </script>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-12">
+        <h2>Filtrado</h2>
+        <p>
+          Se puede buscar por cualquier columna
+        </p>
+      </div>
+      <div class="col-12">
+        <input class="form-control" id="busqueda" type="text" placeholder="Buscar.." />
+      </div>
+      <div class="col-12">
+        <br />
+        <table class="table table-hover table-dark">
+          <thead>
+            <tr>
+              <th scope="col">Nombre</th>
+              <th scope="col">Descripción</th>
+            </tr>
+          </thead>
+          <tbody id="bodyTable"></tbody>
+        </table>
+      </div>
+      <div class="col-12" id="status"></div>
+    </div>
+  </div>
+</body>
+
+</html>
